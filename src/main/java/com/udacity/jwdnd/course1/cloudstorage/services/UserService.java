@@ -34,4 +34,9 @@ public class UserService {
 
         return userMapper.createUser(new User(null, user.getUsername(), encodeSalt, hashedPassword, user.getFirstname().toLowerCase(), user.getLastname().toLowerCase()));
     }
+
+    public Integer getUserId(String username) {
+        User user = userMapper.getUser(username);
+        return user.getUserid();
+    }
 }

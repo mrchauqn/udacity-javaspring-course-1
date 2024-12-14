@@ -14,15 +14,17 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(request ->
                         request
-                                .requestMatchers("/signup", "/css/**", "/js/**").permitAll()
+                                .requestMatchers("/signup", "/login", "/css/**", "/js/**").permitAll()
                                 .anyRequest().authenticated())
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .permitAll()
                         .defaultSuccessUrl("/home", true)
                 )
-                .logout(logout -> logout.clearAuthentication(true)
-                        .logoutSuccessUrl("/login"))
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                )
         ;
 
         return http.build();
