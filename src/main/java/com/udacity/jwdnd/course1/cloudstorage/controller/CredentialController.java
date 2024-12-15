@@ -27,7 +27,7 @@ public class CredentialController {
     @Autowired
     private EncryptionService encryptionService;
 
-    static final String SECRET_KEY = "12345678901234561234567890123456";
+    public static final String SECRET_KEY = "12345678901234561234567890123456";
 
     @PostMapping("/add-or-update-credential")
     public String addOrUpdateCredential(Authentication authentication,

@@ -26,7 +26,25 @@ public class HomePage {
     @FindBy(id = "noteSubmit")
     private WebElement noteSubmit;
 
+    @FindBy(css = "#noteTable > tbody > tr:last-child > th")
+    private WebElement newestNoteTitleTxt;
+
+    @FindBy(css = "#noteTable > tbody > tr:last-child > td:last-child")
+    private WebElement newestNoteDescTxt;
+
+    @FindBy(css = "#noteTable > tbody > tr:last-child > td:first-child > button")
+    private WebElement newestNoteEditButton;
+
+    @FindBy(css = "#noteTable > tbody > tr:last-child > td:first-child > a")
+    private WebElement newestNoteDeleteButton;
+
     // ======= CREDENTIALS =======
+
+    @FindBy(id = "nav-credentials-tab")
+    private WebElement navCredentialsTab;
+
+    @FindBy(id = "credentialSubmit")
+    private WebElement credentialSubmit;
 
     @FindBy(id = "credential-url")
     private WebElement credentialUrlInput;
@@ -37,14 +55,20 @@ public class HomePage {
     @FindBy(id = "credential-password")
     private WebElement credentialPasswordInput;
 
-    @FindBy(css = "#noteTable > tbody > tr:last-child > th")
-    private WebElement newestNoteTitleTxt;
+    @FindBy(css = "#credentialTable > tbody > tr:last-child > th")
+    private WebElement newestCredentialUrlTxt;
 
-    @FindBy(css = "#noteTable > tbody > tr:last-child > td:first-child > button")
-    private WebElement newestNoteEditButton;
+    @FindBy(css = "#credentialTable > tbody > tr:last-child > td:nth-child(3)")
+    private WebElement newestCredentialUsernameTxt;
 
-    @FindBy(css = "#noteTable > tbody > tr:last-child > td:first-child > a")
-    private WebElement newestNoteDeleteButton;
+    @FindBy(css = "#credentialTable > tbody > tr:last-child > td:nth-child(4)")
+    private WebElement newestCredentialPasswordTxt;
+
+    @FindBy(css = "#credentialTable > tbody > tr:last-child > td:first-child > button")
+    private WebElement newestCredentialEditButton;
+
+    @FindBy(css = "#credentialTable > tbody > tr:last-child > td:first-child > a")
+    private WebElement newestCredentialDeleteButton;
 
     // ======= CONFIG =======
 
@@ -58,6 +82,7 @@ public class HomePage {
     }
 
     // ======= BEHAVIORS =======
+    // ======= BEHAVIORS - NOTES =======
 
     public void goNotesTab() {
         js.executeScript("arguments[0].click();", navNotesTab);
@@ -79,7 +104,42 @@ public class HomePage {
         return wait.until(ExpectedConditions.elementToBeClickable(newestNoteTitleTxt)).getText();
     }
 
+    public String getNewestNoteDesc() {
+        return wait.until(ExpectedConditions.elementToBeClickable(newestNoteDescTxt)).getText();
+    }
+
+    // ======= BEHAVIORS - CREDENTIALS =======
+
+    public void goCredentialsTab() {
+        js.executeScript("arguments[0].click();", navCredentialsTab);
+    }
+
+    public void saveCredential() {
+        js.executeScript("arguments[0].click();", credentialSubmit);
+    }
+
+    public void clickEditFirstCredential() {
+        js.executeScript("arguments[0].click();", newestCredentialEditButton);
+    }
+
+    public void clickDeleteFirstCredential() {
+        js.executeScript("arguments[0].click();", newestCredentialDeleteButton);
+    }
+
+    public String getNewestCredentialUrl() {
+        return wait.until(ExpectedConditions.elementToBeClickable(newestCredentialUrlTxt)).getText();
+    }
+
+    public String getNewestCredentialUsername() {
+        return wait.until(ExpectedConditions.elementToBeClickable(newestCredentialUsernameTxt)).getText();
+    }
+
+    public String getNewestCredentialPassword() {
+        return wait.until(ExpectedConditions.elementToBeClickable(newestCredentialPasswordTxt)).getText();
+    }
+
     // ======= SETTERS =======
+    // ======= SETTERS - NOTES =======
 
     public void setNoteDescriptionInput(String noteDescriptionInput) {
         js.executeScript("arguments[0].value='" + noteDescriptionInput + "'", this.noteDescriptionInput);
@@ -88,6 +148,8 @@ public class HomePage {
     public void setNoteTitleInput(String noteTitleInput) {
         js.executeScript("arguments[0].value='" + noteTitleInput + "'", this.noteTitleInput);
     }
+
+    // ======= SETTERS - CREDENTIALS =======
 
     public void setCredentialUrlInput(String credentialUrlInput) {
         js.executeScript("arguments[0].value='" + credentialUrlInput + "'", this.credentialUrlInput);
@@ -100,4 +162,5 @@ public class HomePage {
     public void setCredentialPasswordInput(String credentialPasswordInput) {
         js.executeScript("arguments[0].value='" + credentialPasswordInput + "'", this.credentialPasswordInput);
     }
+
 }

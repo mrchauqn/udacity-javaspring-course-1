@@ -20,6 +20,7 @@ public class NoteTests extends CloudStorageApplicationTests {
         homePage.goNotesTab();
 
         Assertions.assertEquals(noteTitle, homePage.getNewestNoteTitle());
+        Assertions.assertEquals(noteDesc, homePage.getNewestNoteDesc());
     }
 
     @Test
@@ -39,6 +40,7 @@ public class NoteTests extends CloudStorageApplicationTests {
         homePage.goNotesTab();
 
         Assertions.assertEquals(newNoteTitle, homePage.getNewestNoteTitle());
+        Assertions.assertEquals(newNoteDesc, homePage.getNewestNoteDesc());
     }
 
     @Test
