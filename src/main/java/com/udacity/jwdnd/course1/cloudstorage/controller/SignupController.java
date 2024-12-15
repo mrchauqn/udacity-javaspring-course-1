@@ -39,7 +39,7 @@ public class SignupController {
                     isError = true;
                     message = "An unexpected error happens!";
                 } else {
-                    message = "Create user successfully!";
+                    message = "You successfully signed up!";
                 }
             }
         } catch (Exception e) {

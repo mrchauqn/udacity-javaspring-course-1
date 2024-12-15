@@ -90,7 +90,7 @@ public class HomeController {
                 throw new Exception("Please choose a file to upload!");
             }
 
-            if (newFileObj.getSize() > (5 * 1024 * 1024)) {
+            if (newFileObj.getSize() >= (5 * 1024 * 1024)) {
                 throw new Exception("Only upload file that its size less than 5MB!");
             }
 

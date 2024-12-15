@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
 
@@ -33,15 +34,15 @@ public class CredentialController {
                                         @ModelAttribute("newFile") FileForm newFile,
                                         @ModelAttribute("modifiedNote") Note note,
                                         @ModelAttribute("modifiedCredential") Credential credential,
-                                        Model model
+                                        RedirectAttributes redirectAttributes
     ) {
-        Credential[] credentials;
-        Credential[] newList = null;
-        String username = authentication.getName();
-        Integer userId = userService.getUserId(username);
+        String message;
+        boolean isError = false;
 
         try {
             Integer credentialId = credential.getCredentialid();
+            String username = authentication.getName();
+            Integer userId = userService.getUserId(username);
 
             if (credentialId == null) {
                 credentialService.insert(
@@ -53,33 +54,29 @@ public class CredentialController {
                                 credential.getPassword(),
                                 userId
                         ));
+                message = "Create credential successfully!";
             } else {
                 credential.setKey(this.SECRET_KEY);
                 credentialService.update(credential);
+                message = "Update credential successfully!";
             }
         } catch (Exception e) {
-            String message = e.getMessage();
+            isError = true;
+            message = e.getMessage();
             if (message == null) message = "Has unexpected error";
-
-            credentials = credentialService.getCredentialsByUser(userId);
-            Arrays.stream(credentials).forEach(credentialIt -> {
-                credentialIt.setBasepassword(credentialIt.getPassword());
-                credentialIt.setPassword(encryptionService.encryptValue(credentialIt.getPassword(), this.SECRET_KEY));
-            });
-
-            model.addAttribute("credentials", credentials);
-            model.addAttribute("isError", false);
-            model.addAttribute("message", message);
-
-            return "home";
         }
+
+        redirectAttributes.addFlashAttribute("isError", isError);
+        redirectAttributes.addFlashAttribute("message", message);
 
         return "redirect:/home";
     }
 
     @GetMapping("/delete/{credentialid}")
-    public String deleteCredential(@PathVariable Integer credential) {
-        credentialService.delete(credential);
+    public String deleteCredential(@PathVariable Integer credentialid, RedirectAttributes redirectAttributes) {
+        credentialService.delete(credentialid);
+        redirectAttributes.addFlashAttribute("isError", false);
+        redirectAttributes.addFlashAttribute("message", "Delete credential successfully!");
 
         return "redirect:/home";
     }
