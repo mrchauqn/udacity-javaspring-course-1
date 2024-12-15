@@ -19,6 +19,10 @@ public class FileService {
         return fileMapper.getFile(filename);
     }
 
+    public void deleteFileByUser(String filename, Integer userid) {
+        fileMapper.deleteFileByUser(filename, userid);
+    }
+
     public int insert(File file) {
         return fileMapper.insert(file);
     }

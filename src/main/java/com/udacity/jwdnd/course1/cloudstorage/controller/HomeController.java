@@ -1,9 +1,10 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
+import com.udacity.jwdnd.course1.cloudstorage.model.Credential;
 import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.model.FileForm;
-import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
-import com.udacity.jwdnd.course1.cloudstorage.services.UserService;
+import com.udacity.jwdnd.course1.cloudstorage.model.Note;
+import com.udacity.jwdnd.course1.cloudstorage.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -25,32 +26,56 @@ public class HomeController {
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private NoteService noteService;
+
+    @Autowired
+    private CredentialService credentialService;
+
+    @Autowired
+    private EncryptionService encryptionService;
+
     @GetMapping
-    public String getHome(Authentication authentication, @ModelAttribute("newFile") FileForm newFile, Model model) {
+    public String getHome(
+            Authentication authentication,
+            @ModelAttribute("newFile") FileForm newFile,
+            @ModelAttribute("modifiedNote") Note modifiedNote,
+            @ModelAttribute("modifiedCredential") Credential modifiedCredential,
+            Model model) {
         String username = authentication.getName();
         Integer userId = userService.getUserId(username);
 
         model.addAttribute("files", fileService.getListFilesByUser(userId));
+        model.addAttribute("notes", noteService.getNotesByUser(userId));
+
+        Credential[] credentials = credentialService.getCredentialsByUser(userId);
+        Arrays.stream(credentials).forEach(credentialIt -> credentialIt.setPassword(encryptionService.encryptValue(credentialIt.getPassword(), credentialIt.getKey())));
+        model.addAttribute("credentials", credentials);
 
         return "home";
     }
 
-    @GetMapping(value = "/get-file/{filename}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public @ResponseBody byte[] getFile(@PathVariable String filename) {
-        return fileService.getFile(filename).getFiledata();
-    }
+
+    // =========== FILES ===========
 
     @PostMapping
-    public String newFile(Authentication authentication, @ModelAttribute("newFile") FileForm newFile, Model model) {
+    public String newFile(
+            Authentication authentication,
+            @ModelAttribute("newFile") FileForm newFile,
+            @ModelAttribute("modifiedNote") Note modifiedNote,
+            @ModelAttribute("modifiedCredential") Credential modifiedCredential,
+            Model model
+    ) {
         boolean isError = false;
         String message;
         String[] files;
         String[] newList = null;
 
+        String username = authentication.getName();
+        MultipartFile newFileObj = newFile.getFile();
+        Integer userId = userService.getUserId(username);
+
         try {
-            String username = authentication.getName();
-            Integer userId = userService.getUserId(username);
-            MultipartFile newFileObj = newFile.getFile();
             String newFileName = newFileObj.getOriginalFilename();
 
             files = fileService.getListFilesByUser(userId);
@@ -72,7 +97,7 @@ public class HomeController {
 
             int rows = fileService.insert(fileWillSave);
 
-            if (rows < 1){
+            if (rows < 1) {
                 throw new Exception();
             } else {
                 message = "Upload file successfully!";
@@ -89,9 +114,44 @@ public class HomeController {
         model.addAttribute("files", newList);
         model.addAttribute("isError", isError);
         model.addAttribute("message", message);
+        model.addAttribute("notes", noteService.getNotesByUser(userId));
+
+        Credential[] credentials = credentialService.getCredentialsByUser(userId);
+        Arrays.stream(credentials).forEach(credentialIt -> credentialIt.setPassword(encryptionService.encryptValue(credentialIt.getPassword(), credentialIt.getKey())));
+        model.addAttribute("credentials", credentials);
 
         return "home";
     }
 
+    @GetMapping(value = "/get-file/{filename}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public @ResponseBody byte[] getFile(@PathVariable String filename) {
+        return fileService.getFile(filename).getFiledata();
+    }
 
+
+    @GetMapping(value = "/delete-file/{filename}")
+    public String delete(Authentication authentication, @ModelAttribute("newFile") FileForm newFile, @PathVariable String filename, Model model) {
+        boolean isError = false;
+        String message = null;
+
+        try {
+
+            String username = authentication.getName();
+            Integer userId = userService.getUserId(username);
+
+            fileService.deleteFileByUser(filename, userId);
+            message = "Delete file success!";
+        } catch (Exception e) {
+            isError = true;
+            message = e.getMessage();
+            if (message == null) message = "Has unexpected error";
+
+            model.addAttribute("isError", isError);
+            model.addAttribute("message", message);
+
+            return "home";
+        }
+
+        return "redirect:/home";
+    }
 }

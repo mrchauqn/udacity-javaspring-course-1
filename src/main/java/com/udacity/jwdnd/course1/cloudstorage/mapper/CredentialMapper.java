@@ -7,12 +7,12 @@ import org.apache.ibatis.annotations.*;
 public interface CredentialMapper {
 
     @Insert("INSERT INTO CREDENTIALS (url, username, key, password, userid) " +
-            "VALUES(#{url}, #{userName}, #{key}, #{password}, #{userid})")
+            "VALUES(#{url}, #{username}, #{key}, #{password}, #{userid})")
     @Options(useGeneratedKeys = true, keyProperty = "credentialid")
     int insert(Credential credential);
 
     @Select("SELECT * FROM CREDENTIALS WHERE userid = #{userId}")
-    Credential getCredential(Integer userId);
+    Credential[] getCredential(Integer userId);
 
     @Update("UPDATE CREDENTIALS SET url = #{url}, key = #{key}, password = #{password}, username = #{newUserName} WHERE credentialid = #{credentialId}")
     void updateCredential(Integer credentialId, String newUserName, String url, String key, String password);

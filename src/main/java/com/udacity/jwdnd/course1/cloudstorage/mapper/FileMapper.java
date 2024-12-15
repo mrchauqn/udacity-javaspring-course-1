@@ -18,4 +18,7 @@ public interface FileMapper {
 
     @Delete("DELETE FROM FILES WHERE filename = #{fileName}")
     void deleteFile(String fileName);
+
+    @Delete("DELETE FROM FILES WHERE filename = #{fileName} AND userid = #{userid}")
+    void deleteFileByUser(String fileName, Integer userid);
 }
