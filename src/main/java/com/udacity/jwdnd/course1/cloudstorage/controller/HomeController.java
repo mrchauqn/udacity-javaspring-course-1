@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
 
@@ -69,22 +70,18 @@ public class HomeController {
             @ModelAttribute("newFile") FileForm newFile,
             @ModelAttribute("modifiedNote") Note modifiedNote,
             @ModelAttribute("modifiedCredential") Credential modifiedCredential,
-            Model model
+            RedirectAttributes redirectAttributes
     ) {
         boolean isError = false;
         String message;
-        String[] files;
-        String[] newList = null;
 
-        String username = authentication.getName();
-        MultipartFile newFileObj = newFile.getFile();
-        Integer userId = userService.getUserId(username);
 
         try {
-            String newFileName = newFileObj.getOriginalFilename();
+            String username = authentication.getName();
+            Integer userId = userService.getUserId(username);
 
-            files = fileService.getListFilesByUser(userId);
-            newList = files;
+            MultipartFile newFileObj = newFile.getFile();
+            String newFileName = newFileObj.getOriginalFilename();
 
             if (StringUtils.isEmpty(newFileName)) {
                 throw new Exception("Please choose a file to upload!");
@@ -110,8 +107,6 @@ public class HomeController {
                 throw new Exception();
             } else {
                 message = "Upload file successfully!";
-                newList = Arrays.copyOf(files, files.length + 1);
-                newList[files.length] = newFileName;
             }
 
         } catch (Exception e) {
@@ -120,16 +115,10 @@ public class HomeController {
             if (message == null) message = "Has unexpected error";
         }
 
-        model.addAttribute("files", newList);
-        model.addAttribute("isError", isError);
-        model.addAttribute("message", message);
-        model.addAttribute("notes", noteService.getNotesByUser(userId));
+        redirectAttributes.addFlashAttribute("isError", isError);
+        redirectAttributes.addFlashAttribute("message", message);
 
-        Credential[] credentials = credentialService.getCredentialsByUser(userId);
-        Arrays.stream(credentials).forEach(credentialIt -> credentialIt.setPassword(encryptionService.encryptValue(credentialIt.getPassword(), credentialIt.getKey())));
-        model.addAttribute("credentials", credentials);
-
-        return "home";
+        return "redirect:/home";
     }
 
     @GetMapping(value = "/get-file/{filename}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
@@ -139,9 +128,13 @@ public class HomeController {
 
 
     @GetMapping(value = "/delete-file/{filename}")
-    public String delete(Authentication authentication, @ModelAttribute("newFile") FileForm newFile, @PathVariable String filename, Model model) {
+    public String delete(Authentication authentication,
+                         @ModelAttribute("newFile") FileForm newFile,
+                         @PathVariable String filename, Model model,
+                         RedirectAttributes redirectAttributes
+    ) {
         boolean isError = false;
-        String message = null;
+        String message;
 
         try {
 
@@ -154,12 +147,10 @@ public class HomeController {
             isError = true;
             message = e.getMessage();
             if (message == null) message = "Has unexpected error";
-
-            model.addAttribute("isError", isError);
-            model.addAttribute("message", message);
-
-            return "home";
         }
+
+        redirectAttributes.addFlashAttribute("isError", isError);
+        redirectAttributes.addFlashAttribute("message", message);
 
         return "redirect:/home";
     }
