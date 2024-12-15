@@ -6,6 +6,7 @@ public class Credential {
     private String username;
     private String key;
     private String password;
+    private String basepassword;
     private Integer userid;
 
     public Credential(Integer credentialid, String url, String username, String key, String password, Integer userid) {
@@ -63,5 +64,13 @@ public class Credential {
 
     public void setCredentialid(Integer credentialid) {
         this.credentialid = credentialid;
+    }
+
+    public String getBasepassword() {
+        return basepassword;
+    }
+
+    public void setBasepassword(String basepassword) {
+        this.basepassword = basepassword;
     }
 }

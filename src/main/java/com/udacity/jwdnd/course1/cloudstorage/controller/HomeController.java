@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 
+import static com.udacity.jwdnd.course1.cloudstorage.controller.CredentialController.SECRET_KEY;
+
 @Controller
 @RequestMapping("/home")
 public class HomeController {
@@ -49,7 +51,10 @@ public class HomeController {
         model.addAttribute("notes", noteService.getNotesByUser(userId));
 
         Credential[] credentials = credentialService.getCredentialsByUser(userId);
-        Arrays.stream(credentials).forEach(credentialIt -> credentialIt.setPassword(encryptionService.encryptValue(credentialIt.getPassword(), credentialIt.getKey())));
+        Arrays.stream(credentials).forEach(credentialIt -> {
+            credentialIt.setBasepassword(credentialIt.getPassword());
+            credentialIt.setPassword(encryptionService.encryptValue(credentialIt.getPassword(), SECRET_KEY));
+        });
         model.addAttribute("credentials", credentials);
 
         return "home";
@@ -83,6 +88,10 @@ public class HomeController {
 
             if (StringUtils.isEmpty(newFileName)) {
                 throw new Exception("Please choose a file to upload!");
+            }
+
+            if (newFileObj.getSize() > (5 * 1024 * 1024)) {
+                throw new Exception("Only upload file that its size less than 5MB!");
             }
 
             String[] uploadedFiles = fileService.getListFilesByUser(userId);

@@ -26,7 +26,7 @@ public class CredentialController {
     @Autowired
     private EncryptionService encryptionService;
 
-    private final String SECRET_KEY = "12345678901234561234567890123456";
+    static final String SECRET_KEY = "12345678901234561234567890123456";
 
     @PostMapping("/add-or-update-credential")
     public String addOrUpdateCredential(Authentication authentication,
@@ -62,7 +62,10 @@ public class CredentialController {
             if (message == null) message = "Has unexpected error";
 
             credentials = credentialService.getCredentialsByUser(userId);
-            Arrays.stream(credentials).forEach(credentialIt -> credentialIt.setPassword(encryptionService.encryptValue(credentialIt.getPassword(), this.SECRET_KEY)));
+            Arrays.stream(credentials).forEach(credentialIt -> {
+                credentialIt.setBasepassword(credentialIt.getPassword());
+                credentialIt.setPassword(encryptionService.encryptValue(credentialIt.getPassword(), this.SECRET_KEY));
+            });
 
             model.addAttribute("credentials", credentials);
             model.addAttribute("isError", false);
