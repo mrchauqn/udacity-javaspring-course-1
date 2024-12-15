@@ -21,9 +21,11 @@ import java.util.Date;
 class CloudStorageApplicationTests {
 
     @LocalServerPort
-    private int port;
+    protected int port;
 
-    private WebDriver driver;
+    protected WebDriver driver;
+
+    protected final String TIME_STAMP = String.valueOf((new Date().getTime()));
 
     @BeforeAll
     static void beforeAll() {
@@ -46,6 +48,31 @@ class CloudStorageApplicationTests {
     public void getLoginPage() {
         driver.get("http://localhost:" + this.port + "/login");
         Assertions.assertEquals("Login", driver.getTitle());
+    }
+
+    private void visit(String url) {
+        this.driver.get(url);
+    }
+
+    protected HomePage signupAndLogin() {
+        String username = "J-" + TIME_STAMP;
+        String password = "12345678";
+
+        visit("http://localhost:" + this.port + "/signup");
+        SignupPage signupPage = new SignupPage(this.driver);
+        signupPage.setFirstName("Micheal");
+        signupPage.setLastName("J");
+        signupPage.setUserName(username);
+        signupPage.setPassword(password);
+        signupPage.signUp();
+
+        visit("http://localhost:" + this.port + "/login");
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.setUserName(username);
+        loginPage.setPassword(password);
+        loginPage.login();
+
+        return new HomePage(this.driver);
     }
 
     /**

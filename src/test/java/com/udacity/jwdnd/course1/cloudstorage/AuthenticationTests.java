@@ -15,30 +15,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuthenticationTests {
-
-    @LocalServerPort
-    private int port;
-
-    private WebDriver driver;
-
-    @BeforeAll
-    static void beforeAll() {
-        WebDriverManager.chromedriver().setup();
-        ;
-    }
-
-    @BeforeEach
-    public void beforeEach() {
-        this.driver = new ChromeDriver();
-    }
-
-    @AfterEach
-    public void afterEach() {
-        if (this.driver != null) {
-            this.driver.quit();
-        }
-    }
+public class AuthenticationTests extends CloudStorageApplicationTests {
 
     @Test
     public void requireLogin() {
