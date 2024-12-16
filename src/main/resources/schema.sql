@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS USERS (
-  userid serial PRIMARY KEY,
-  username VARCHAR(20) UNIQUE,
+  userid INT PRIMARY KEY auto_increment,
+  username VARCHAR(20),
   salt VARCHAR,
   password VARCHAR,
   firstname VARCHAR(20),
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS USERS (
 );
 
 CREATE TABLE IF NOT EXISTS NOTES (
-    noteid serial PRIMARY KEY,
+    noteid INT PRIMARY KEY auto_increment,
     notetitle VARCHAR(20),
     notedescription VARCHAR (1000),
     userid INT,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS NOTES (
 );
 
 CREATE TABLE IF NOT EXISTS FILES (
-    fileId serial PRIMARY KEY,
+    fileId INT PRIMARY KEY auto_increment,
     filename VARCHAR,
     contenttype VARCHAR,
     filesize VARCHAR,
@@ -26,10 +26,10 @@ CREATE TABLE IF NOT EXISTS FILES (
 );
 
 CREATE TABLE IF NOT EXISTS CREDENTIALS (
-    credentialid serial PRIMARY KEY,
+    credentialid INT PRIMARY KEY auto_increment,
     url VARCHAR(100),
     username VARCHAR (30),
-    key VARCHAR,
+    "key" VARCHAR,
     password VARCHAR,
     userid INT,
     foreign key (userid) references USERS(userid)
