@@ -53,8 +53,8 @@ public class HomeController {
 
         Credential[] credentials = credentialService.getCredentialsByUser(userId);
         Arrays.stream(credentials).forEach(credentialIt -> {
-            credentialIt.setBasepassword(credentialIt.getPassword());
-            credentialIt.setPassword(encryptionService.encryptValue(credentialIt.getPassword(), SECRET_KEY));
+            credentialIt.setBasepassword(encryptionService.decryptValue(credentialIt.getPassword(), SECRET_KEY));
+            credentialIt.setPassword(credentialIt.getPassword());
         });
         model.addAttribute("credentials", credentials);
 

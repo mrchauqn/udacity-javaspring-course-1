@@ -51,12 +51,13 @@ public class CredentialController {
                                 credential.getUrl(),
                                 credential.getUsername(),
                                 this.SECRET_KEY,
-                                credential.getPassword(),
+                                encryptionService.encryptValue(credential.getPassword(), this.SECRET_KEY),
                                 userId
                         ));
                 message = "Create credential successfully!";
             } else {
                 credential.setKey(this.SECRET_KEY);
+                credential.setPassword(encryptionService.encryptValue(credential.getPassword(), this.SECRET_KEY));
                 credentialService.update(credential);
                 message = "Update credential successfully!";
             }
